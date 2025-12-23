@@ -1,0 +1,44 @@
+name: Deploy Simulador EAATA (Node)
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v0.1.10
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          port: 22
+          script: |
+            set -e
+
+            echo "=== CONFIGURANDO AMBIENTE NODE ==="
+            export NVM_DIR="$HOME/.nvm"
+            export PATH="$NVM_DIR/versions/node/v20.17.0/bin:$PATH"
+
+            echo "Node version:"
+            node -v
+            npm -v
+
+            echo "=== ACESSANDO PROJETO ==="
+            cd /home/ubuntu/simuladorEaata
+
+            echo "=== ATUALIZANDO CÓDIGO ==="
+            git fetch origin main
+            git reset --hard origin/main
+
+            echo "=== INSTALANDO DEPENDÊNCIAS NODE ==="
+            npm install --production
+
+            echo "=== REINICIANDO SERVIÇO ==="
+            sudo systemctl restart simulador-eaata
+
+            echo "✅ DEPLOY NODE CONCLUÍDO COM SUCESSO!"
