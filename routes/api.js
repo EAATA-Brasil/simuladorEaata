@@ -21,22 +21,16 @@ router.use((req, res, next) => {
   next();
 });
 
-router.use(cors({
-  origin: (origin, callback) => {
+router.use((req, res, next) => {
+  const token = req.headers['x-internal-token'];
 
-    try {
-      const { hostname } = new URL(origin);
-
-      if (ALLOWED_ORIGINS.includes(hostname)) {
-        return callback(null, true);
-      }
-    } catch (err) {
-      return callback(new Error('Invalid Origin'), false);
-    }
-
-    return callback(new Error('Origin not allowed'), false);
+  if (token !== process.env.X_INTERNAL_TOKEN) {
+    return res.status(403).json({ error: 'Forbidden' });
   }
-}));
+
+  next();
+});
+
 
 
 
