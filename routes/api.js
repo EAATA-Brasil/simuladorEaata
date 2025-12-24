@@ -19,20 +19,20 @@ const ALLOWED_ORIGINS = process.env.ALLOWED_ORIGINS
 
 router.use(cors({
   origin: (origin, callback) => {
-    // 🚫 Origin é obrigatório
-    if (!origin) {
-      return callback(new Error('Origin header required'), false);
+    try {
+      const { hostname } = new URL(origin);
+
+      if (ALLOWED_ORIGINS.includes(hostname)) {
+        return callback(null, true);
+      }
+    } catch (err) {
+      return callback(new Error('Invalid Origin'), false);
     }
 
-    // 🚫 Origin diferente = bloqueia
-    if (!ALLOWED_ORIGINS.includes(origin)) {
-      return callback(new Error('Origin not allowed'), false);
-    }
-
-    // ✅ Origin válida
-    return callback(null, true);
+    return callback(new Error('Origin not allowed'), false);
   }
 }));
+
 
 
 router.get('/equipamentos', async (req, res) => {
