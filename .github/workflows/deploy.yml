@@ -39,6 +39,6 @@ jobs:
             npm install --production
 
             echo "=== REINICIANDO SERVIÇO ==="
-            sudo systemctl restart simulador-eaata
+            sudo systemctl restart simulador-eaata.service
 
             echo "✅ DEPLOY NODE CONCLUÍDO COM SUCESSO!"
