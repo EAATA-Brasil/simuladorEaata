@@ -16,9 +16,14 @@ const ALLOWED_ORIGINS = process.env.ALLOWED_ORIGINS
   .split(',')
   .map(o => o.trim());
 
+router.use((req, res, next) => {
+  console.log('ORIGIN RECEBIDO:', req.headers.origin);
+  next();
+});
 
 router.use(cors({
   origin: (origin, callback) => {
+
     try {
       const { hostname } = new URL(origin);
 
@@ -32,6 +37,7 @@ router.use(cors({
     return callback(new Error('Origin not allowed'), false);
   }
 }));
+
 
 
 
